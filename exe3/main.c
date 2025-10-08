@@ -36,7 +36,8 @@ void process_task(void *p) {
             if (i == 5){
                 if (media == 0.0){
                     media = (double)soma/5.0;
-                    printf("%lf \n", media);
+                    int media_inteira = (int)media;
+                    printf("%d \n", media_inteira);
                 }
                 else{
                     vec[0] = vec[1];
@@ -44,7 +45,8 @@ void process_task(void *p) {
                     vec[3] = vec[4];
                     vec[4] = data;
                     media = (double)(vec[0] + vec[1] + vec[2] + vec[3] + vec[4])/5.0;
-                    printf("%lf \n", media);
+                    int media_inteira = (int)media;
+                    printf("%d \n", media_inteira);
                 }
             }
             else{
