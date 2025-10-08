@@ -25,36 +25,37 @@ void data_task(void *p) {
 
 void process_task(void *p) {
     int data = 0;
-    int vec[5];
-    int i = 0;
-    int soma = 0;
-    double media = 0.0;
+    int buf[5] = {0};      // buffer circular
+    int idx = 0;           // posição atual para sobrescrever (0..4)
+    int count = 0;         // quantas amostras já temos (até 5)
+    int sum = 0;           // soma das amostras no buffer
 
     while (true) {
-        if (xQueueReceive(xQueueData, &data, 100)) {
-            // implementar filtro aqui!
-            if (i == 5){
-                if (media == 0.0){
-                    media = (double)soma/5.0;
-                    int media_inteira = (int)media;
-                    printf("%d \n", media_inteira);
+        // espera por dado (bloqueia até 100 ticks)
+        if (xQueueReceive(xQueueData, &data, pdMS_TO_TICKS(100))) {
+            if (count < 5) {
+                // ainda enchendo a janela
+                buf[idx] = data;
+                sum += data;
+                idx = (idx + 1) % 5;
+                count++;
+                if (count == 5) {
+                    // primeira média: imprime imediatamente
+                    int avg = sum / 5;
+                    printf("%d\n", avg);
                 }
-                else{
-                    vec[0] = vec[1];
-                    vec[1] = vec[2];
-                    vec[3] = vec[4];
-                    vec[4] = data;
-                    media = (double)(vec[0] + vec[1] + vec[2] + vec[3] + vec[4])/5.0;
-                    int media_inteira = (int)media;
-                    printf("%d \n", media_inteira);
-                }
+            } else {
+                // janela cheia: remove o velho, coloca o novo, atualiza soma
+                sum -= buf[idx];      // subtrai elemento que sai
+                buf[idx] = data;      // insere novo elemento
+                sum += data;          // adiciona novo à soma
+                idx = (idx + 1) % 5;  // move índice circular
+                int avg = sum / 5;
+                printf("%d\n", avg);
             }
-            else{
-                vec[i] = data;
-                soma += vec[i];
-                i ++;
-            }
-            // deixar esse delay!
+
+            // opcional: se você precisa desse delay por causa do enunciado,
+            // mantenha; caso contrário remova para processar o mais rápido possível.
             vTaskDelay(pdMS_TO_TICKS(50));
         }
     }
