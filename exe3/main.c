@@ -39,11 +39,11 @@ void process_task(void *p) {
                 sum += data;
                 idx = (idx + 1) % 5;
                 count++;
-                if (count == 5) {
+                //if (count == 5) {
                     // primeira média: imprime imediatamente
-                    int avg = sum / 5;
-                    printf("%d\n", avg);
-                }
+                int avg = sum / 5;
+                printf("%d\n", avg);
+                //}
             } else {
                 // janela cheia: remove o velho, coloca o novo, atualiza soma
                 sum -= buf[idx];      // subtrai elemento que sai
